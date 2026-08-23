@@ -1,0 +1,96 @@
+.draw-gate {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.login-card,
+.question-field {
+  padding: 1.1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, .9);
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-card h3,
+.login-card p,
+.question-field p {
+  margin: 0;
+}
+
+.login-card p,
+.question-field p,
+.question-meta {
+  color: var(--color-muted);
+}
+
+.login-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--color-primary-dark);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.question-field {
+  display: grid;
+  gap: .65rem;
+}
+
+.question-field textarea {
+  width: 100%;
+  min-height: 180px;
+  resize: vertical;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+  line-height: 1.7;
+}
+
+.question-field textarea:focus {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.question-field textarea:disabled {
+  background: #f0ece5;
+  cursor: not-allowed;
+}
+
+.question-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: .86rem;
+}
+
+.field-error {
+  color: #8b2f2f;
+}
+
+@media (min-width: 700px) {
+  .login-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
