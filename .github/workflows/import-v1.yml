@@ -1,0 +1,34 @@
+name: Import current 1.0 website
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-v1.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout v2 repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone current 1.0 website
+        run: |
+          git clone --depth 1 --branch feature/homepage https://github.com/warmmcat/student-support-web.git /tmp/student-support-web-v1
+
+      - name: Replace v2 contents with current 1.0 contents
+        run: |
+          rsync -a --delete --exclude='.git' /tmp/student-support-web-v1/ ./
+
+      - name: Commit imported website
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import current 1.0 website into v2"
+          git push origin main
