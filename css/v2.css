@@ -30,6 +30,13 @@
   color: var(--color-muted);
 }
 
+.login-data-note {
+  margin-top: .35rem !important;
+  font-size: .9rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
 .login-actions {
   display: flex;
   flex-wrap: wrap;
