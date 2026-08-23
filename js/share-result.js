@@ -1,11 +1,12 @@
 'use strict';
 
+(() => {
 const resultCard = document.querySelector('#result-card');
 if (!resultCard) throw new Error('找不到抽籤結果區塊。');
 
 const shareStylesheet = document.createElement('link');
 shareStylesheet.rel = 'stylesheet';
-shareStylesheet.href = 'css/share-result.css?v=20260823-1';
+shareStylesheet.href = 'css/share-result.css?v=20260823-2';
 document.head.append(shareStylesheet);
 
 const tools = document.createElement('section');
@@ -222,3 +223,4 @@ async function shareResult() {
 imageButton.addEventListener('click', downloadImage);
 pdfButton.addEventListener('click', downloadPdf);
 shareButton.addEventListener('click', shareResult);
+})();
