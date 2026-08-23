@@ -18,8 +18,8 @@ tools.innerHTML = `
     <span>分享檔只包含卦象結果，不包含你的問題或登入帳號。</span>
   </div>
   <div class="share-tools-actions">
-    <button class="button button-secondary" id="download-result-image" type="button">下載圖片 PNG</button>
-    <button class="button button-secondary" id="download-result-pdf" type="button">下載 PDF</button>
+    <button class="button button-primary" id="download-result-image" type="button">下載圖片 PNG</button>
+    <button class="button button-primary" id="download-result-pdf" type="button">下載 PDF</button>
     <button class="button button-primary" id="share-result" type="button" disabled>分享結果</button>
   </div>
   <p class="share-status" id="share-status" role="status" aria-live="polite"></p>`;
