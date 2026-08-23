@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import { collection, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, setDoc, startAfter, Timestamp, where } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, limit, orderBy, query, setDoc, Timestamp, where } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 import { FIREBASE_CONFIG } from "./firebase-config.js";
 
 const configured = Boolean(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.authDomain && FIREBASE_CONFIG.projectId);
@@ -25,6 +25,8 @@ let user = null;
 let rows = [];
 let page = 1;
 const pageSize = 30;
+const cleanupBatchSize = 200;
+const maxCleanupRounds = 5;
 
 function setStatus(message) { if (statusBox) statusBox.innerHTML = `<p>${message}</p>`; }
 function escapeHtml(value='') { return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -44,6 +46,27 @@ async function isAdmin(uid) {
 async function loadSettings() {
   const snap = await getDoc(doc(db, 'config', 'access'));
   restrictTmu.checked = snap.exists() && snap.data().restrictToTmu === true;
+}
+
+async function cleanupExpiredRecords() {
+  let deleted = 0;
+
+  for (let round = 0; round < maxCleanupRounds; round += 1) {
+    const q = query(
+      collection(db, 'draws'),
+      where('expireAt', '<=', Timestamp.now()),
+      limit(cleanupBatchSize)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) break;
+
+    await Promise.all(snap.docs.map(record => deleteDoc(record.ref)));
+    deleted += snap.size;
+
+    if (snap.size < cleanupBatchSize) break;
+  }
+
+  return deleted;
 }
 
 async function loadRows() {
@@ -112,9 +135,11 @@ if (!configured) {
       loginButton.hidden = true;
       logoutButton.hidden = false;
       consoleBox.hidden = false;
-      setStatus(`管理者已登入：${escapeHtml(user.email || '')}`);
+      setStatus(`管理者已登入：${escapeHtml(user.email || '')}。正在檢查一年期保留政策…`);
       await loadSettings();
+      const deleted = await cleanupExpiredRecords();
       await loadRows();
+      setStatus(`管理者已登入：${escapeHtml(user.email || '')}。${deleted > 0 ? `已自動清除 ${deleted} 筆超過一年紀錄。` : '目前沒有超過一年需要清除的紀錄。'}`);
     } catch (error) {
       consoleBox.hidden = true;
       setStatus(error.message || '無法確認管理權限。');
