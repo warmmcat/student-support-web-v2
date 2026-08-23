@@ -20,7 +20,7 @@ tools.innerHTML = `
   <div class="share-tools-actions">
     <button class="button button-secondary" id="download-result-image" type="button">下載圖片 PNG</button>
     <button class="button button-secondary" id="download-result-pdf" type="button">下載 PDF</button>
-    <button class="button button-primary" id="share-result" type="button">分享結果</button>
+    <button class="button button-primary" id="share-result" type="button" disabled>分享結果</button>
   </div>
   <p class="share-status" id="share-status" role="status" aria-live="polite"></p>`;
 
@@ -40,16 +40,28 @@ const dependencies = {
   jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js'
 };
 
+let cachedShareFile = null;
+let sharePreparation = null;
+let shareGeneration = 0;
+let busy = false;
+
 function setStatus(message, isError = false) {
   status.textContent = message;
   status.classList.toggle('share-status-error', isError);
 }
 
-function setBusy(active) {
+function syncButtons() {
+  imageButton.disabled = busy;
+  pdfButton.disabled = busy;
+  shareButton.disabled = busy || !cachedShareFile;
   [imageButton, pdfButton, shareButton].forEach(button => {
-    button.disabled = active;
-    button.setAttribute('aria-busy', active.toString());
+    button.setAttribute('aria-busy', busy.toString());
   });
+}
+
+function setBusy(active) {
+  busy = active;
+  syncButtons();
 }
 
 function loadScript(src, readyCheck) {
@@ -57,6 +69,10 @@ function loadScript(src, readyCheck) {
   return new Promise((resolve, reject) => {
     const existing = document.querySelector(`script[src="${src}"]`);
     if (existing) {
+      if (readyCheck()) {
+        resolve();
+        return;
+      }
       existing.addEventListener('load', resolve, { once: true });
       existing.addEventListener('error', () => reject(new Error('分享元件載入失敗。')), { once: true });
       return;
@@ -145,6 +161,47 @@ function downloadBlob(blob, filename) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+async function prepareShareFile() {
+  if (resultCard.hidden) return null;
+  if (sharePreparation) return sharePreparation;
+
+  const generation = ++shareGeneration;
+  cachedShareFile = null;
+  syncButtons();
+  setStatus('正在準備分享功能…');
+
+  sharePreparation = (async () => {
+    const canvas = await renderResultCanvas();
+    const blob = await canvasToBlob(canvas);
+    const file = new File([blob], `${safeFileName()}.png`, { type: 'image/png' });
+
+    if (generation === shareGeneration && !resultCard.hidden) {
+      cachedShareFile = file;
+      setStatus('分享已準備好。');
+      syncButtons();
+    }
+    return file;
+  })().catch(error => {
+    if (generation === shareGeneration) {
+      cachedShareFile = null;
+      setStatus(error.message || '分享功能準備失敗，可先使用下載圖片。', true);
+      syncButtons();
+    }
+    return null;
+  }).finally(() => {
+    if (generation === shareGeneration) sharePreparation = null;
+  });
+
+  return sharePreparation;
+}
+
+function resetSharePreparation() {
+  shareGeneration += 1;
+  cachedShareFile = null;
+  sharePreparation = null;
+  syncButtons();
+}
+
 async function downloadImage() {
   setBusy(true);
   setStatus('正在製作分享圖片…');
@@ -199,35 +256,57 @@ async function downloadPdf() {
   }
 }
 
-async function shareResult() {
-  setBusy(true);
-  setStatus('正在準備分享檔…');
-  try {
-    const canvas = await renderResultCanvas();
-    const blob = await canvasToBlob(canvas);
-    const file = new File([blob], `${safeFileName()}.png`, { type: 'image/png' });
-    const shareData = {
-      title: '學生輔導中心｜心靈解籤所',
-      text: '給此刻的自己，一段溫柔的提醒。',
-      files: [file]
-    };
-
-    if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
-      await navigator.share(shareData);
-      setStatus('分享面板已開啟。');
-    } else {
-      downloadBlob(blob, file.name);
-      setStatus('此瀏覽器不支援直接分享，已改為下載圖片；你可以從 LINE、IG 或 Threads 選取這張圖片分享。');
-    }
-  } catch (error) {
-    if (error?.name === 'AbortError') setStatus('已取消分享。');
-    else setStatus(error.message || '分享失敗，請稍後再試。', true);
-  } finally {
-    setBusy(false);
+function shareResult() {
+  const file = cachedShareFile;
+  if (!file) {
+    setStatus('分享圖片仍在準備中，完成後按鈕會自動啟用。');
+    prepareShareFile();
+    return;
   }
+
+  if (!navigator.share || (navigator.canShare && !navigator.canShare({ files: [file] }))) {
+    downloadBlob(file, file.name);
+    setStatus('此瀏覽器不支援直接分享，已改為下載圖片；你可以從 LINE、IG 或 Threads 選取這張圖片分享。');
+    return;
+  }
+
+  setBusy(true);
+  setStatus('正在開啟分享面板…');
+
+  const sharePromise = navigator.share({
+    title: '學生輔導中心｜心靈解籤所',
+    files: [file]
+  });
+
+  sharePromise.then(() => {
+    setStatus('分享面板已開啟。');
+  }).catch(error => {
+    if (error?.name === 'AbortError') {
+      setStatus('已取消分享。');
+    } else if (error?.name === 'NotAllowedError') {
+      setStatus('iOS 未允許這次分享。請再按一次「分享結果」；若仍無法使用，可改按「下載圖片 PNG」後從 LINE、IG 或 Threads 分享。', true);
+    } else {
+      setStatus(error.message || '分享失敗，請改用下載圖片。', true);
+    }
+  }).finally(() => {
+    setBusy(false);
+  });
 }
+
+const resultObserver = new MutationObserver(() => {
+  if (resultCard.hidden) {
+    resetSharePreparation();
+    return;
+  }
+  window.requestAnimationFrame(() => prepareShareFile());
+});
+
+resultObserver.observe(resultCard, { attributes: true, attributeFilter: ['hidden'] });
 
 imageButton.addEventListener('click', downloadImage);
 pdfButton.addEventListener('click', downloadPdf);
 shareButton.addEventListener('click', shareResult);
+
+syncButtons();
+if (!resultCard.hidden) prepareShareFile();
 })();
