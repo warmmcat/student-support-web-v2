@@ -35,6 +35,14 @@ const pdfButton = tools.querySelector('#download-result-pdf');
 const shareButton = tools.querySelector('#share-result');
 const status = tools.querySelector('#share-status');
 
+const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+if (isAppleMobile) {
+  imageButton.textContent = '儲存圖片';
+  imageButton.setAttribute('aria-label', '將結果圖片儲存到照片 App');
+}
+
 const dependencies = {
   html2canvas: 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
   jspdf: 'https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js'
@@ -51,7 +59,7 @@ function setStatus(message, isError = false) {
 }
 
 function syncButtons() {
-  imageButton.disabled = busy;
+  imageButton.disabled = busy || (isAppleMobile && !cachedShareFile);
   pdfButton.disabled = busy;
   shareButton.disabled = busy || !cachedShareFile;
   [imageButton, pdfButton, shareButton].forEach(button => {
@@ -161,6 +169,18 @@ function downloadBlob(blob, filename) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+function openImagePreview(file) {
+  const url = URL.createObjectURL(file);
+  const preview = window.open(url, '_blank');
+  if (!preview) {
+    URL.revokeObjectURL(url);
+    setStatus('Safari 無法開啟圖片預覽，請改用「分享結果」。', true);
+    return;
+  }
+  setStatus('圖片已開啟。可長按圖片後選擇「儲存到照片」。');
+  window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
 async function prepareShareFile() {
   if (resultCard.hidden) return null;
   if (sharePreparation) return sharePreparation;
@@ -177,7 +197,7 @@ async function prepareShareFile() {
 
     if (generation === shareGeneration && !resultCard.hidden) {
       cachedShareFile = file;
-      setStatus('分享已準備好。');
+      setStatus(isAppleMobile ? '圖片已準備好，可儲存到照片或分享。' : '分享已準備好。');
       syncButtons();
     }
     return file;
@@ -203,6 +223,40 @@ function resetSharePreparation() {
 }
 
 async function downloadImage() {
+  if (isAppleMobile) {
+    const file = cachedShareFile;
+    if (!file) {
+      setStatus('圖片仍在準備中，完成後按鈕會自動啟用。');
+      prepareShareFile();
+      return;
+    }
+
+    if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [file] }))) {
+      setBusy(true);
+      setStatus('請在 iOS 選單中選擇「儲存影像」。');
+      const savePromise = navigator.share({ files: [file] });
+      savePromise.then(() => {
+        setStatus('若已選擇「儲存影像」，圖片會出現在「照片」App。');
+      }).catch(error => {
+        if (error?.name === 'AbortError') {
+          setStatus('已取消儲存。');
+        } else if (error?.name === 'NotAllowedError') {
+          setStatus('iOS 未允許這次操作，將改為開啟圖片預覽。', true);
+          openImagePreview(file);
+        } else {
+          setStatus('無法開啟 iOS 儲存選單，將改為開啟圖片預覽。', true);
+          openImagePreview(file);
+        }
+      }).finally(() => {
+        setBusy(false);
+      });
+      return;
+    }
+
+    openImagePreview(file);
+    return;
+  }
+
   setBusy(true);
   setStatus('正在製作分享圖片…');
   try {
@@ -284,9 +338,9 @@ function shareResult() {
     if (error?.name === 'AbortError') {
       setStatus('已取消分享。');
     } else if (error?.name === 'NotAllowedError') {
-      setStatus('iOS 未允許這次分享。請再按一次「分享結果」；若仍無法使用，可改按「下載圖片 PNG」後從 LINE、IG 或 Threads 分享。', true);
+      setStatus('iOS 未允許這次分享。請再按一次「分享結果」；若仍無法使用，可改按「儲存圖片」。', true);
     } else {
-      setStatus(error.message || '分享失敗，請改用下載圖片。', true);
+      setStatus(error.message || '分享失敗，請改用儲存圖片。', true);
     }
   }).finally(() => {
     setBusy(false);
