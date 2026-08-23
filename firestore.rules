@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function tmuRestrictionEnabled() {
+      return exists(/databases/$(database)/documents/config/access)
+        && get(/databases/$(database)/documents/config/access).data.restrictToTmu == true;
+    }
+
+    function allowedUser() {
+      return signedIn()
+        && (!tmuRestrictionEnabled() || request.auth.token.email.matches('.*@tmu\\.edu\\.tw$'));
+    }
+
+    match /draws/{drawId} {
+      allow create: if allowedUser()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.userEmail == request.auth.token.email
+        && request.resource.data.question is string
+        && request.resource.data.question.size() > 0
+        && request.resource.data.question.size() <= 5000
+        && request.resource.data.hexagramName is string
+        && request.resource.data.hexagramName.size() > 0
+        && request.resource.data.hexagramName.size() <= 20
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.expireAt is timestamp
+        && request.resource.data.expireAt > request.time
+        && request.resource.data.expireAt < request.time + duration.value(367, 'd');
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /admins/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /config/access {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
