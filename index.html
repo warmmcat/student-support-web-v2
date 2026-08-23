@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="給大學生的溫暖心理支持網站，提供六十四卦心靈抽籤、輔導中心資訊與求助資源。">
+  <title>學生輔導中心｜心靈解籤所</title>
+  <link rel="stylesheet" href="css/style.css?v=20260721-2">
+  <script src="js/hexagrams.js" defer></script>
+  <script src="js/hexagrams-1.js" defer></script>
+  <script src="js/hexagrams-2.js" defer></script>
+  <script src="js/hexagrams-3.js" defer></script>
+  <script src="js/hexagrams-4.js" defer></script>
+  <script src="js/hexagrams-5.js" defer></script>
+  <script src="js/hexagrams-6.js" defer></script>
+  <script src="js/hexagrams-7.js" defer></script>
+  <script src="js/hexagrams-8.js" defer></script>
+  <script src="js/app.js?v=20260721-3" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">跳到主要內容</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#top" aria-label="學生輔導中心｜心靈解籤所首頁"><span class="brand-mark" aria-hidden="true">心</span><span>學生輔導中心｜心靈解籤所</span></a>
+      <nav aria-label="主要導覽">
+        <ul class="nav-list"><li><a href="#draw">心靈抽籤</a></li><li><a href="#services">探索支持</a></li><li><a href="#help">求助資源</a></li><li><a href="#contact">聯絡我們</a></li></ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">給在迷惘的你，一點往前走的能量跟指引</p>
+          <h1 id="hero-title">給此刻的你，一段溫柔的提醒</h1>
+          <div class="hero-text">
+            <p>有些時候，我們不一定能立刻說清楚自己的心情，只是覺得有點累、有點迷惘，或想找一個地方暫停一下。</p>
+            <p>在抽籤之前，邀請你先慢下來，輕輕呼吸。想一想，此刻的你，最希望獲得什麼樣的理解與陪伴？</p>
+            <p>準備好後，按下按鈕，為自己抽出一段來自《易經》六十四卦的文字。</p>
+            <p>它不會預測你的未來，也不會替你做決定，而是提供一個不同的角度，陪你看看現在的心情與處境。</p>
+          </div>
+          <div class="hero-actions"><a class="button button-primary" href="#draw">為自己抽一卦</a><a class="text-link" href="#help">我現在需要幫助</a></div>
+          <p class="hero-note">每一次抽籤，都是一次停下來聽聽自己的機會。</p>
+        </div>
+        <div class="hero-visual" aria-hidden="true"><div class="sun-shape"></div><div class="landscape landscape-back"></div><div class="landscape landscape-front"></div><div class="quiet-note">慢一點，也沒關係。</div></div>
+      </div>
+    </section>
+
+    <section class="section draw-section" id="draw" aria-labelledby="draw-title">
+      <div class="container draw-layout">
+        <div class="draw-intro">
+          <p class="eyebrow">六十四卦心靈抽籤</p>
+          <h2 id="draw-title">帶著一個念頭，為此刻的自己抽一卦</h2>
+          <p>先讓呼吸慢下來，想一想最近最掛心的事。抽出的文字不是預言，而是一個整理心情與看見選擇的入口。</p>
+          <aside class="draw-notice" aria-label="使用提醒"><strong>使用提醒</strong><p>本籤詩以《易經》卦義作為自我反思與生活整理的媒介，不代表未來事件的預言、保證或命定判斷，也不能取代心理諮商、醫療診斷或其他專業建議。</p></aside>
+          <button class="button button-primary" id="draw-button" type="button">靜心後，抽一卦</button>
+        </div>
+
+        <div class="draw-animation" id="draw-animation" role="status" aria-live="polite" aria-label="正在為你抽取一卦" hidden>
+          <div class="bagua-spinner" aria-hidden="true">
+            <span class="bagua-symbol">☯</span>
+            <span class="trigram trigram-1">☰</span>
+            <span class="trigram trigram-2">☱</span>
+            <span class="trigram trigram-3">☲</span>
+            <span class="trigram trigram-4">☳</span>
+            <span class="trigram trigram-5">☴</span>
+            <span class="trigram trigram-6">☵</span>
+            <span class="trigram trigram-7">☶</span>
+            <span class="trigram trigram-8">☷</span>
+          </div>
+          <p>讓心慢下來，卦象正在形成……</p>
+        </div>
+
+        <article class="result-card" id="result-card" aria-labelledby="result-title" aria-live="polite" hidden>
+          <header class="result-header">
+            <p class="result-number" id="result-number"></p>
+            <h2 id="result-title"></h2>
+          </header>
+          <div class="result-sections">
+            <section class="result-section result-overview" aria-labelledby="result-description-heading"><h3 id="result-description-heading">說明</h3><div class="result-copy" id="result-description"></div></section>
+            <section class="result-section" aria-labelledby="result-love-heading"><h3 id="result-love-heading">關於感情</h3><div class="result-copy" id="result-love"></div></section>
+            <section class="result-section" aria-labelledby="result-study-heading"><h3 id="result-study-heading">關於課業</h3><div class="result-copy" id="result-study"></div></section>
+            <section class="result-section" aria-labelledby="result-relationships-heading"><h3 id="result-relationships-heading">關於人際</h3><div class="result-copy" id="result-relationships"></div></section>
+            <section class="result-section" aria-labelledby="result-stress-heading"><h3 id="result-stress-heading">壓力調適</h3><div class="result-copy" id="result-stress"></div></section>
+            <section class="result-section result-message-section" aria-labelledby="result-message-heading"><h3 id="result-message-heading">給同學的一句話</h3><blockquote id="result-message"></blockquote></section>
+          </div>
+          <p class="result-reminder">請把這段文字當作一個溫柔的提問，而不是必須照做的答案。你仍然可以依自己的處境、價值與安全需要作選擇。</p>
+          <div class="result-actions"><button class="button button-secondary" id="draw-again-button" type="button">再抽一卦</button><a class="text-link" href="#help">我想找人聊聊</a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="services" aria-labelledby="services-title">
+      <div class="container"><div class="section-heading"><p class="eyebrow">從一個適合你的入口開始</p><h2 id="services-title">今天，你想怎麼照顧自己？</h2><p>沒有標準答案。選一個此刻最接近你的方向就好。</p></div><div class="card-grid"><article class="feature-card feature-card-highlight"><div class="card-icon" aria-hidden="true">卦</div><h3>心靈抽籤</h3><p>透過六十四卦的文字，整理當下的感受，提醒自己仍有選擇與力量。</p><a class="card-link" href="#draw">開始抽籤<span aria-hidden="true">→</span></a></article><article class="feature-card"><div class="card-icon" aria-hidden="true">伴</div><h3>輔導中心介紹</h3><p>認識學生輔導中心能提供的服務、會談方式與預約流程。求助不代表脆弱，而是願意好好照顧自己。</p><a class="card-link" href="#contact">認識我們<span aria-hidden="true">→</span></a></article><article class="feature-card"><div class="card-icon" aria-hidden="true">援</div><h3>求助資源</h3><p>當情緒太重、事情太多，或你擔心自己與身邊的人時，可以從校內外資源中找到適合的支持。</p><a class="card-link" href="#help">查看資源<span aria-hidden="true">→</span></a></article></div></div>
+    </section>
+
+    <section class="section help-section" id="help" aria-labelledby="help-title"><div class="container help-layout"><div><p class="eyebrow">需要更多支持時</p><h2 id="help-title">你不必一個人撐住</h2><p class="help-intro">當情緒困擾持續影響睡眠、飲食、上課、人際或安全感，或出現傷害自己的想法，請儘快聯繫學生輔導中心、可信任的師長或專業醫療資源。</p></div><div class="help-panel"><h3>立即可用的支持</h3><ul class="support-list"><li><span>衛生福利部安心專線</span><a href="tel:1925">1925</a></li><li><span>生命線協談專線</span><a href="tel:1995">1995</a></li><li><span>張老師專線</span><a href="tel:1980">1980</a></li><li><span>有立即危險時</span><a href="tel:119">119</a></li></ul><p class="help-note">你也可以前往最近的急診，或請一位信任的人陪你一起去。現在先讓自己不要獨處。</p></div></div></section>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="container footer-grid"><div><p class="footer-title">學生輔導中心</p><p>我們願意在你需要時，陪你一起理解正在發生的事。</p></div><address class="contact-list"><p><strong>服務時間</strong><span>週一至週五 08:00–17:00</span></p><p><strong>電話</strong><a href="tel:+886227363266">02-2736-3266</a></p><p><strong>電子信箱</strong><a href="mailto:tmuscc@tmu.edu.tw">tmuscc@tmu.edu.tw</a></p><p><strong>地點</strong><span>信義校區：醫學綜合大樓前棟3樓<br>雙和校區：教學研究大樓4樓</span></p></address></div>
+    <div class="container footer-bottom"><p>© <span id="current-year"></span> 臺北醫學大學學生輔導中心　製作者：梁文鴻心理師。以 AI 工具進行製作，如有相關修正建議，請 email 至北醫學輔信箱：<a href="mailto:tmuscc@tmu.edu.tw">tmuscc@tmu.edu.tw</a></p><p>這個網站提供支持性資訊，不能取代醫療診斷或緊急救援。</p></div>
+    <div class="container footer-home"><a class="back-to-home" href="#top" aria-label="回到網站首頁"><span aria-hidden="true">↑</span> 回到首頁</a></div>
+  </footer>
+</body>
+</html>
