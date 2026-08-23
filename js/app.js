@@ -15,6 +15,11 @@ authModule.type = 'module';
 authModule.src = 'js/auth-data.js?v=20260823-1';
 document.head.append(authModule);
 
+const shareModule = document.createElement('script');
+shareModule.src = 'js/share-result.js?v=20260823-1';
+shareModule.defer = true;
+document.head.append(shareModule);
+
 const yearTarget = document.querySelector('#current-year');
 const drawButton = document.querySelector('#draw-button');
 const drawAgainButton = document.querySelector('#draw-again-button');

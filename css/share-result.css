@@ -1,0 +1,109 @@
+.share-tools {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 253, 248, .88);
+}
+
+.share-tools-heading {
+  display: grid;
+  gap: .3rem;
+}
+
+.share-tools-heading span,
+.share-status {
+  color: var(--color-muted);
+  font-size: .9rem;
+}
+
+.share-tools-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+.share-status {
+  min-height: 1.4em;
+  margin: 0;
+}
+
+.share-status-error {
+  color: #8b2f2f;
+}
+
+.share-export-stage {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 900px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.share-export-card {
+  width: 900px;
+  max-width: none;
+  margin: 0;
+  padding: 56px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #fffaf3;
+}
+
+.share-export-card .result-sections {
+  gap: 26px;
+}
+
+.share-export-card .result-section {
+  break-inside: avoid;
+}
+
+.share-export-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 34px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(87, 73, 55, .22);
+  color: #4f6045;
+  font-size: 20px;
+}
+
+.share-export-brand span {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #4f6045;
+  color: #fffaf3;
+  font-weight: 800;
+}
+
+.share-export-footer {
+  margin-top: 40px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(87, 73, 55, .22);
+  color: #746b60;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.share-export-footer p {
+  margin: .3rem 0;
+}
+
+@media (max-width: 560px) {
+  .share-tools-actions {
+    display: grid;
+  }
+
+  .share-tools-actions .button {
+    width: 100%;
+  }
+}
