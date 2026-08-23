@@ -162,7 +162,7 @@ async function downloadImage() {
 
 async function downloadPdf() {
   setBusy(true);
-  setStatus('正在製作 PDF…');
+  setStatus('正在製作單頁 PDF…');
   try {
     const [canvas] = await Promise.all([renderResultCanvas(), ensureJsPdf().then(() => null)]);
     const { jsPDF } = window.jspdf;
@@ -170,21 +170,28 @@ async function downloadPdf() {
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 10;
-    const imageWidth = pageWidth - margin * 2;
-    const imageHeight = canvas.height * imageWidth / canvas.width;
-    const usableHeight = pageHeight - margin * 2;
+    const maxWidth = pageWidth - margin * 2;
+    const maxHeight = pageHeight - margin * 2;
+    const imageRatio = canvas.width / canvas.height;
+    const pageRatio = maxWidth / maxHeight;
+
+    let imageWidth;
+    let imageHeight;
+    if (imageRatio > pageRatio) {
+      imageWidth = maxWidth;
+      imageHeight = imageWidth / imageRatio;
+    } else {
+      imageHeight = maxHeight;
+      imageWidth = imageHeight * imageRatio;
+    }
+
+    const x = (pageWidth - imageWidth) / 2;
+    const y = (pageHeight - imageHeight) / 2;
     const imageData = canvas.toDataURL('image/jpeg', 0.92);
 
-    let offset = 0;
-    pdf.addImage(imageData, 'JPEG', margin, margin, imageWidth, imageHeight, undefined, 'FAST');
-    offset += usableHeight;
-    while (offset < imageHeight) {
-      pdf.addPage();
-      pdf.addImage(imageData, 'JPEG', margin, margin - offset, imageWidth, imageHeight, undefined, 'FAST');
-      offset += usableHeight;
-    }
+    pdf.addImage(imageData, 'JPEG', x, y, imageWidth, imageHeight, undefined, 'FAST');
     pdf.save(`${safeFileName()}.pdf`);
-    setStatus('PDF 已建立。');
+    setStatus('單頁 PDF 已建立。');
   } catch (error) {
     setStatus(error.message || 'PDF 建立失敗，請稍後再試。', true);
   } finally {
