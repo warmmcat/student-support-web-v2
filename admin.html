@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>心靈解籤所｜管理後台</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <script type="module" src="js/admin.js" defer></script>
+</head>
+<body>
+  <main class="admin-shell">
+    <header class="admin-header">
+      <div>
+        <p class="eyebrow">學生輔導中心｜2.0</p>
+        <h1>管理後台</h1>
+        <p>僅授權管理者可查閱抽籤紀錄。資料預計保留一年。</p>
+      </div>
+      <div class="admin-actions">
+        <a class="button button-secondary" href="index.html">回前台</a>
+        <button class="button button-primary" id="admin-login" type="button">Google 登入</button>
+        <button class="button button-secondary" id="admin-logout" type="button" hidden>登出</button>
+      </div>
+    </header>
+
+    <section class="admin-panel" id="admin-status" aria-live="polite">
+      <p>正在確認管理權限…</p>
+    </section>
+
+    <section class="admin-panel" id="admin-console" hidden>
+      <div class="toolbar">
+        <label>月份
+          <input id="month-filter" type="month">
+        </label>
+        <label>搜尋帳號或問題
+          <input id="keyword-filter" type="search" maxlength="200" placeholder="輸入 email 或關鍵字">
+        </label>
+        <button class="button button-secondary" id="refresh-data" type="button">查詢</button>
+        <button class="button button-secondary" id="export-csv" type="button">匯出 CSV</button>
+      </div>
+
+      <div class="setting-row">
+        <div><strong>北醫帳號限定</strong><p>開啟後，只有已驗證的 @tmu.edu.tw Google 帳號可新增抽籤紀錄。</p></div>
+        <label class="switch-label"><input id="restrict-tmu" type="checkbox"> 啟用</label>
+      </div>
+
+      <p id="record-summary"></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>抽籤時間</th><th>使用者帳號</th><th>問題內容</th><th>卦名</th></tr></thead>
+          <tbody id="records-body"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button id="prev-page" type="button">上一頁</button>
+        <span id="page-status"></span>
+        <button id="next-page" type="button">下一頁</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
