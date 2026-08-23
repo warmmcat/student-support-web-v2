@@ -48,7 +48,6 @@ gate.innerHTML = `
   <section class="login-card" aria-labelledby="login-title">
     <div>
       <h3 id="login-title">請登入你的 Google 帳號，為自己抽一卦</h3>
-      <p class="login-data-note">網站僅會蒐集同學的抽籤結果，作為統計分析及輔導工作使用</p>
       <p id="login-status">正在確認登入狀態…</p>
     </div>
     <div class="login-actions">
