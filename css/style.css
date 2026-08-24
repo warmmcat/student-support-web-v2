@@ -285,10 +285,40 @@ h1 {
   background: #30372f;
   color: #f5f0e8;
 }
-.footer-grid { display: grid; gap: 2rem; }
+.footer-grid {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
 .footer-title { margin: 0 0 .5rem; font-size: 1.35rem; font-weight: 800; }
 .footer-grid > div > p:last-child { max-width: 30rem; color: #cfd6cb; }
-.contact-list { display: grid; gap: .75rem; font-style: normal; }
+.footer-grid > div:first-child {
+  line-height: 1.5;
+}
+.footer-grid > div:first-child h3 {
+  margin: .85rem 0 .2rem;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+.footer-grid > div:first-child p {
+  margin: .18rem 0;
+  line-height: 1.5;
+}
+.footer-grid > div:first-child ul {
+  margin: .2rem 0 .45rem;
+  padding-left: 1.25rem;
+}
+.footer-grid > div:first-child li {
+  margin: .08rem 0;
+  line-height: 1.45;
+}
+.contact-list {
+  display: grid;
+  align-self: start;
+  gap: .75rem;
+  margin: 0;
+  font-style: normal;
+}
 .contact-list p { display: grid; gap: .15rem; margin: 0; }
 .contact-list span { color: #cfd6cb; }
 .footer-bottom {
